@@ -1,16 +1,23 @@
 {
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
   "Category": "Developer Tools",
   "Title": "uTPro Audit Log",
   "Description": "Audit Log viewer dashboard for Umbraco 16+ backoffice. Browse umbracoAudit and umbracoLog tables with filtering, search, and pagination.",
   "AuthorDetails": {
     "Name": "T4VN",
     "Url": "https://t4vn.com",
-    "ImageUrl": ""
+    "ImageUrl": "https://github.com/thientu995.png"
   },
-  "AlternatePackageNames": [ "Umbraco Audit Log Viewer", "Umbraco.AuditLogViewer" ],
   "ArtifactUrl": "",
-  "ScreenshotUrls": [],
-  "LicenseTypes": [ "Free" ],
+  "ScreenshotUrls": [
+    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-1.png",
+    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-2.png",
+    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-3.png",
+    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-4.png"
+  ],
+  "LicenseTypes": [
+    "Free"
+  ],
   "Tags": [
     "audit",
     "log",
@@ -21,7 +28,8 @@
     "audit log",
     "audit trail"
   ],
+  "PackageType": "Package",
   "MinimumVersionOfUmbraco": "16.0.0",
-  "DocumentationUrl": "https://github.com/T4VN/uTPro",
-  "IssueTrackerUrl": "https://github.com/T4VN/uTPro/issues"
+  "DocumentationUrl": "https://github.com/T4VN/uTPro.Feature.AuditLog",
+  "IssueTrackerUrl": "https://github.com/T4VN/uTPro.Feature.AuditLog/issues"
 }
