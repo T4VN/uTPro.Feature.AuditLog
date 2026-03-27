@@ -6,7 +6,8 @@
   "AuthorDetails": {
     "Name": "T4VN",
     "Url": "https://t4vn.com",
-    "ImageUrl": "https://github.com/thientu995.png"
+    "ImageUrl": "https://github.com/t4vn.png",
+    "SyncContributorsFromRepository": true
   },
   "Screenshots": [
     {
