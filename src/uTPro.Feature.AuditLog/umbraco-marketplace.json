@@ -1,0 +1,27 @@
+{
+  "Category": "Developer Tools",
+  "Title": "uTPro Audit Log",
+  "Description": "Audit Log viewer dashboard for Umbraco 16+ backoffice. Browse umbracoAudit and umbracoLog tables with filtering, search, and pagination.",
+  "AuthorDetails": {
+    "Name": "T4VN",
+    "Url": "https://t4vn.com",
+    "ImageUrl": ""
+  },
+  "AlternatePackageNames": [ "Umbraco Audit Log Viewer", "Umbraco.AuditLogViewer" ],
+  "ArtifactUrl": "",
+  "ScreenshotUrls": [],
+  "LicenseTypes": [ "Free" ],
+  "Tags": [
+    "audit",
+    "log",
+    "dashboard",
+    "backoffice",
+    "changes",
+    "change log",
+    "audit log",
+    "audit trail"
+  ],
+  "MinimumVersionOfUmbraco": "16.0.0",
+  "DocumentationUrl": "https://github.com/T4VN/uTPro",
+  "IssueTrackerUrl": "https://github.com/T4VN/uTPro/issues"
+}

@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <!-- NuGet Package Metadata -->
+    <PackageId>uTPro.Feature.AuditLog</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>T4VN</Authors>
+    <Company>T4VN</Company>
+    <Description>Audit Log viewer dashboard for Umbraco 16+ backoffice. View umbracoAudit and umbracoLog tables with filtering, search, and pagination.</Description>
+    <PackageTags>umbraco;umbraco-marketplace;audit;log;backoffice;dashboard</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/T4VN/uTPro.Feature.AuditLog</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/T4VN/uTPro.Feature.AuditLog</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <StaticWebAssetBasePath>App_Plugins/utpro-audit-log</StaticWebAssetBasePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Umbraco.Cms.Api.Management" Version="16.5.1" />
+    <PackageReference Include="Umbraco.Cms.Infrastructure" Version="16.5.1" />
+    <PackageReference Include="Umbraco.Cms.Core" Version="16.5.1" />
+    <PackageReference Include="Umbraco.Cms.Web.Common" Version="16.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="/" />
+    <None Include="umbraco-marketplace.json" Pack="true" PackagePath="/" />
+  </ItemGroup>
+
+</Project>
