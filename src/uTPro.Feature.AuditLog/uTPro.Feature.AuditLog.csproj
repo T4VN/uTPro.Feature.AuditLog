@@ -18,6 +18,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
     <StaticWebAssetBasePath>App_Plugins/utpro-audit-log</StaticWebAssetBasePath>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageOutputPath>..\..\Build</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
