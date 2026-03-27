@@ -8,12 +8,23 @@
     "Url": "https://t4vn.com",
     "ImageUrl": "https://github.com/thientu995.png"
   },
-  "ArtifactUrl": "",
-  "ScreenshotUrls": [
-    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-1.png",
-    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-2.png",
-    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-3.png",
-    "https://github.com/T4VN/uTPro.Feature.AuditLog/blob/main/Image/Screenshots/Screenshot-4.png"
+  "Screenshots": [
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-1.png",
+      "Caption": "uTPro Audit Log - UmbracoAudit"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-2.png",
+      "Caption": "uTPro Audit Log - UmbracoLog"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-3.png",
+      "Caption": "uTPro Audit Log - UmbracoAudit - Filter"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-4.png",
+      "Caption": "uTPro Audit Log - UmbracoLog - Filter"
+    }
   ],
   "LicenseTypes": [
     "Free"
@@ -28,8 +39,8 @@
     "audit log",
     "audit trail"
   ],
+  "LookingForContributors": true,
   "PackageType": "Package",
-  "MinimumVersionOfUmbraco": "16.0.0",
   "DocumentationUrl": "https://github.com/T4VN/uTPro.Feature.AuditLog",
   "IssueTrackerUrl": "https://github.com/T4VN/uTPro.Feature.AuditLog/issues"
 }
