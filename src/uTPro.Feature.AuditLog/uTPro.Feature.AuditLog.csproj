@@ -7,7 +7,7 @@
 
     <!-- NuGet Package Metadata -->
     <PackageId>uTPro.Feature.AuditLog</PackageId>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <Authors>T4VN</Authors>
     <Company>T4VN</Company>
     <Description>Audit Log dashboard for Umbraco 16+ backoffice. Timeline view, content logs, audit trail with user tracking, filtering, search, CSV export, and UTC/local time toggle.</Description>
