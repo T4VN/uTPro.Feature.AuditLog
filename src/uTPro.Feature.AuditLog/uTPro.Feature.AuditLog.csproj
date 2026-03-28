@@ -16,6 +16,7 @@
     <PackageProjectUrl>https://github.com/T4VN/uTPro.Feature.AuditLog</PackageProjectUrl>
     <RepositoryUrl>https://github.com/T4VN/uTPro.Feature.AuditLog</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>icon.png</PackageIcon>
 
     <StaticWebAssetBasePath>App_Plugins/utpro-audit-log</StaticWebAssetBasePath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -28,6 +29,7 @@
 
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="/" />
+    <None Include="..\..\icon.png" Pack="true" PackagePath="/" />
     <None Include="..\..\umbraco-marketplace.json" Pack="true" PackagePath="/" />
   </ItemGroup>
 
