@@ -1,4 +1,4 @@
-# uTPro.Feature.AuditLog
+# <img width="50" height="50" alt="icon" src="https://github.com/user-attachments/assets/a11d9f9f-fb3e-445c-86a4-401cc8aee392" /> uTPro.Feature.AuditLog
 
 A backoffice dashboard for **Umbraco 16+** that gives you full visibility into your CMS activity — audit trails, content logs, and a unified timeline view — all in one place.
 
