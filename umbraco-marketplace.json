@@ -12,7 +12,7 @@
   "Screenshots": [
     {
       "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-1.png",
-      "Caption": "uTPro Audit Log - UmbracoAudit"
+      "Caption": "uTPro Audit Log - Timeline"
     },
     {
       "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-2.png",
@@ -20,11 +20,19 @@
     },
     {
       "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-3.png",
-      "Caption": "uTPro Audit Log - UmbracoAudit - Filter"
+      "Caption": "uTPro Audit Log - UmbracoAudit"
     },
     {
       "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-4.png",
       "Caption": "uTPro Audit Log - UmbracoLog - Filter"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-5.png",
+      "Caption": "uTPro Audit Log - UTC"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-6-exportCSV.png",
+      "Caption": "uTPro Audit Log - Export CSV"
     }
   ],
   "LicenseTypes": [
