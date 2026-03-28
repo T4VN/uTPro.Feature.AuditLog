@@ -2,7 +2,7 @@
   "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
   "Category": "Developer Tools",
   "Title": "uTPro Audit Log",
-  "Description": "Audit Log viewer dashboard for Umbraco 16+ backoffice. Browse umbracoAudit and umbracoLog tables with filtering, search, and pagination.",
+  "Description": "Audit Log dashboard for Umbraco 16+ backoffice. Timeline view merging audit and log data, content logs, audit trail with user tracking, full-text search, CSV export, and UTC/local time toggle.",
   "AuthorDetails": {
     "Name": "T4VN",
     "Url": "https://t4vn.com",
@@ -35,10 +35,15 @@
     "log",
     "dashboard",
     "backoffice",
+    "timeline",
+    "tracking",
+    "export",
+    "csv",
     "changes",
     "change log",
     "audit log",
-    "audit trail"
+    "audit trail",
+    "user activity"
   ],
   "LookingForContributors": true,
   "PackageType": "Package",
