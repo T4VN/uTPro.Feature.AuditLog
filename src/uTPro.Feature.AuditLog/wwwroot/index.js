@@ -134,16 +134,6 @@ export class UtproAuditLogDashboard extends UmbLitElement {
 
     // ── Actions ──────────────────────────────────────────
 
-    switchTab(tab) {
-        this.activeTab = tab;
-        this.currentSkip = 0;
-        this.filterEventType = '';
-        this.filterSearch = '';
-        this.filterDateFrom = '';
-        this.filterDateTo = '';
-        this.loadData();
-    }
-
     applyFilters() {
         this.currentSkip = 0;
         this.loadData();
@@ -218,6 +208,14 @@ export class UtproAuditLogDashboard extends UmbLitElement {
         }
     }
 
+    goToPage(value) {
+        let page = parseInt(value, 10);
+        if (isNaN(page)) page = this.currentPage;
+        page = Math.min(Math.max(1, page), this.totalPages);
+        this.currentSkip = (page - 1) * this.pageSize;
+        this.loadData();
+    }
+
     // ── Computed ─────────────────────────────────────────
 
     get currentPage() {
@@ -244,6 +242,18 @@ export class UtproAuditLogDashboard extends UmbLitElement {
 
     get searchPlaceholder() {
         return SEARCH_PLACEHOLDERS[this.activeTab] || 'Search...';
+    }
+
+    get localTimeLabel() {
+        // getTimezoneOffset() returns minutes behind UTC, so negate to get the GMT offset.
+        const offsetMinutes = -new Date().getTimezoneOffset();
+        const sign = offsetMinutes >= 0 ? '+' : '-';
+        const abs = Math.abs(offsetMinutes);
+        const hours = Math.floor(abs / 60);
+        const minutes = abs % 60;
+        return minutes === 0
+            ? `GMT${sign}${hours}`
+            : `GMT${sign}${hours}:${String(minutes).padStart(2, '0')}`;
     }
 
     formatDate(value) {
@@ -281,31 +291,10 @@ export class UtproAuditLogDashboard extends UmbLitElement {
     render() {
         return html`
             <uui-box>
-                ${this.renderHeader()}
                 ${this.renderFilters()}
                 ${this.renderContent()}
                 ${this.renderPagination()}
             </uui-box>`;
-    }
-
-    renderHeader() {
-        return html`
-            <div class="header">
-                <h2>Audit Log</h2>
-                <div class="tabs">
-                    <uui-button look=${this.activeTab === 'timeline' ? 'primary' : 'secondary'}
-                        @click=${() => this.switchTab('timeline')}>Timeline</uui-button>
-                    <uui-button look=${this.activeTab === 'log' ? 'primary' : 'secondary'}
-                        @click=${() => this.switchTab('log')}>Content Logs</uui-button>
-                    <uui-button look=${this.activeTab === 'audit' ? 'primary' : 'secondary'}
-                        @click=${() => this.switchTab('audit')}>Audit Trail</uui-button>
-                    <span class="separator"></span>
-                    <uui-button look=${this.useUtcTime ? 'primary' : 'outline'} compact
-                        @click=${() => { this.useUtcTime = !this.useUtcTime; }}>
-                        ${this.useUtcTime ? 'UTC' : 'Local'}
-                    </uui-button>
-                </div>
-            </div>`;
     }
 
     renderFilters() {
@@ -353,6 +342,13 @@ export class UtproAuditLogDashboard extends UmbLitElement {
                 <uui-button look="secondary" @click=${() => this.resetFilters()}>Reset</uui-button>
                 <span class="filter-spacer"></span>
                 <uui-button look="outline" @click=${() => this.exportCsv()}>Export CSV</uui-button>
+                <span class="separator"></span>
+                <div class="time-control">
+                    <uui-button look=${!this.useUtcTime ? 'primary' : 'outline'} compact
+                        @click=${() => { this.useUtcTime = false; }}>${this.localTimeLabel}</uui-button>
+                    <uui-button look=${this.useUtcTime ? 'primary' : 'outline'} compact
+                        @click=${() => { this.useUtcTime = true; }}>UTC+0</uui-button>
+                </div>
             </div>`;
     }
 
@@ -378,7 +374,14 @@ export class UtproAuditLogDashboard extends UmbLitElement {
                 <div class="page-controls">
                     <uui-button look="outline" ?disabled=${this.isFirstPage}
                         @click=${() => this.goToPreviousPage()}>Prev</uui-button>
-                    <span>Page ${this.currentPage} / ${this.totalPages}</span>
+                    <span class="page-jump">
+                        Page
+                        <input type="number" class="page-input" min="1" max=${this.totalPages}
+                            .value=${String(this.currentPage)}
+                            @change=${(e) => this.goToPage(e.target.value)}
+                            @keydown=${(e) => { if (e.key === 'Enter') this.goToPage(e.target.value); }} />
+                        / ${this.totalPages}
+                    </span>
                     <uui-button look="outline" ?disabled=${this.isLastPage}
                         @click=${() => this.goToNextPage()}>Next</uui-button>
                 </div>
@@ -473,24 +476,6 @@ export class UtproAuditLogDashboard extends UmbLitElement {
             padding: 20px;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .header h2 {
-            margin: 0;
-            font-size: 1.4rem;
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
         .separator {
             width: 1px;
             height: 24px;
@@ -511,6 +496,12 @@ export class UtproAuditLogDashboard extends UmbLitElement {
 
         .filter-spacer {
             flex: 1;
+        }
+
+        .time-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .select,
@@ -560,6 +551,23 @@ export class UtproAuditLogDashboard extends UmbLitElement {
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .page-jump {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .page-input {
+            width: 56px;
+            padding: 4px 6px;
+            text-align: center;
+            border: 1px solid var(--uui-color-border, #ccc);
+            border-radius: 4px;
+            font-size: 14px;
+            background: var(--uui-color-surface, #fff);
+            color: var(--uui-color-text, #333);
         }
 
         .record-info {

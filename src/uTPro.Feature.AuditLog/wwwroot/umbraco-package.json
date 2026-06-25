@@ -1,16 +1,73 @@
 {
   "name": "uTPro.AuditLog",
-  "version": "1.0.0",
+  "version": "4.0.0",
   "extensions": [
     {
-      "type": "dashboard",
-      "alias": "uTPro.AuditLog.Dashboard",
-      "name": "Audit Log Dashboard",
-      "element": "/App_Plugins/utpro-audit-log/index.js",
-      "elementName": "utpro-audit-log-dashboard",
-      "weight": 20,
-      "meta": { "label": "#utproAuditLog_title", "pathname": "audit-log" },
-      "conditions": [{ "alias": "Umb.Condition.SectionAlias", "match": "Umb.Section.Settings" }]
+      "type": "menuItem",
+      "alias": "uTPro.AuditLog.MenuItem",
+      "name": "Audit Log Menu Item",
+      "weight": 250,
+      "meta": {
+        "label": "#utproAuditLog_title",
+        "icon": "icon-box-alt",
+        "entityType": "utpro-audit-log-root",
+        "menus": ["Umb.Menu.AdvancedSettings"]
+      }
+    },
+    {
+      "type": "workspace",
+      "kind": "default",
+      "alias": "uTPro.AuditLog.Workspace",
+      "name": "Audit Log Root Workspace",
+      "meta": {
+        "entityType": "utpro-audit-log-root",
+        "headline": "#utproAuditLog_title"
+      }
+    },
+    {
+      "type": "workspaceView",
+      "alias": "uTPro.AuditLog.View.Timeline",
+      "name": "Audit Log Timeline View",
+      "element": "/App_Plugins/utpro-audit-log/view-timeline.js",
+      "weight": 300,
+      "meta": {
+        "label": "#utproAuditLog_timeline",
+        "pathname": "timeline",
+        "icon": "icon-time"
+      },
+      "conditions": [
+        { "alias": "Umb.Condition.WorkspaceAlias", "match": "uTPro.AuditLog.Workspace" }
+      ]
+    },
+    {
+      "type": "workspaceView",
+      "alias": "uTPro.AuditLog.View.ContentLogs",
+      "name": "Audit Log Content Logs View",
+      "element": "/App_Plugins/utpro-audit-log/view-content.js",
+      "weight": 200,
+      "meta": {
+        "label": "#utproAuditLog_contentLogs",
+        "pathname": "content-logs",
+        "icon": "icon-box-alt"
+      },
+      "conditions": [
+        { "alias": "Umb.Condition.WorkspaceAlias", "match": "uTPro.AuditLog.Workspace" }
+      ]
+    },
+    {
+      "type": "workspaceView",
+      "alias": "uTPro.AuditLog.View.AuditTrail",
+      "name": "Audit Log Audit Trail View",
+      "element": "/App_Plugins/utpro-audit-log/view-audit.js",
+      "weight": 100,
+      "meta": {
+        "label": "#utproAuditLog_auditTrail",
+        "pathname": "audit-trail",
+        "icon": "icon-notepad"
+      },
+      "conditions": [
+        { "alias": "Umb.Condition.WorkspaceAlias", "match": "uTPro.AuditLog.Workspace" }
+      ]
     },
     {
       "type": "localization",

@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Umbraco.Cms.Api.Management.Controllers;
 using Umbraco.Cms.Api.Management.Routing;
+using Umbraco.Cms.Web.Common.Authorization;
 using uTPro.Feature.AuditLog.Models;
 using uTPro.Feature.AuditLog.Services;
 
@@ -8,6 +10,7 @@ namespace uTPro.Feature.AuditLog.Controllers;
 
 [VersionedApiBackOfficeRoute("utpro/audit-log")]
 [ApiExplorerSettings(GroupName = "uTPro Audit Log")]
+[Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
 public class AuditLogApiController(IAuditLogService auditLogService) : ManagementApiControllerBase
 {
     [HttpPost("audit-entries")]

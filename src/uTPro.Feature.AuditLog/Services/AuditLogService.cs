@@ -31,9 +31,9 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
     private const string TableUser = "umbracoUser";
     private const string TableNode = "umbracoNode";
 
-    // Negate offset: to convert local time → UTC, subtract the offset
-    private static readonly string NegatedUtcOffsetHours =
-        (-TimeZoneInfo.Local.BaseUtcOffset.TotalHours).ToString("+0;-0");
+    // Offset (in minutes) to convert local server time → UTC: subtract the local offset.
+    private static readonly int NegatedUtcOffsetMinutes =
+        -(int)TimeZoneInfo.Local.BaseUtcOffset.TotalMinutes;
 
     #region Audit Entries
 
@@ -209,7 +209,7 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
-                auditConditions.Add($"(a.eventDetails LIKE @{paramIndex} OR a.performingDetails LIKE @{paramIndex} OR a.eventType LIKE @{paramIndex})");
+                auditConditions.Add($"(a.eventDetails LIKE @{paramIndex} OR a.performingDetails LIKE @{paramIndex} OR a.affectedDetails LIKE @{paramIndex} OR a.eventType LIKE @{paramIndex})");
                 logConditions.Add($"(l.logComment LIKE @{paramIndex} OR l.logHeader LIKE @{paramIndex})");
                 parameters.Add($"%{filter.SearchTerm}%");
                 paramIndex++;
@@ -236,6 +236,11 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
             var logWhereClause = logConditions.Count > 0
                 ? " WHERE " + string.Join(" AND ", logConditions) : "";
 
+            // umbracoLog.DateStamp is stored in local server time, while umbracoAudit.eventDateUtc
+            // is UTC. Convert the log timestamp to UTC so both sources sort consistently.
+            // Use the correct date-arithmetic syntax for the active database provider.
+            var logSortDateExpr = BuildLocalToUtcExpression(scope, "l.DateStamp");
+
             var unionSql = $@"
                 SELECT * FROM (
                     SELECT a.eventDateUtc AS Date, 'audit' AS Source, a.performingUserId AS UserId,
@@ -254,7 +259,7 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
                            u.userEmail AS UserEmail,
                            l.logHeader AS Action, l.logComment AS Details, l.entityType AS Extra,
                            l.NodeId AS NodeId, n.[Text] AS NodeName,
-                           datetime(l.DateStamp, '{NegatedUtcOffsetHours} hours') AS SortDate
+                           {logSortDateExpr} AS SortDate
                     FROM {TableLog} l
                     LEFT JOIN {TableUser} u ON l.userId = u.id
                     LEFT JOIN {TableNode} n ON n.id = l.nodeId{logWhereClause}
@@ -358,6 +363,26 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
 
     private static int CalculatePageNumber(int skip, int take)
         => skip / Math.Max(take, 1) + 1;
+
+    /// <summary>
+    /// Builds a provider-specific SQL expression that shifts a local-time column to UTC,
+    /// so audit (UTC) and log (local) timestamps can be sorted on the same scale.
+    /// </summary>
+    private static string BuildLocalToUtcExpression(IScope scope, string column)
+    {
+        var providerName = scope.Database.DatabaseType.GetType().Name;
+        var isSqlite = providerName.Contains("SQLite", StringComparison.OrdinalIgnoreCase);
+
+        if (isSqlite)
+        {
+            // SQLite: datetime(col, '+N minutes') — sign is required in the modifier.
+            var signedMinutes = NegatedUtcOffsetMinutes.ToString("+0;-0");
+            return $"datetime({column}, '{signedMinutes} minutes')";
+        }
+
+        // SQL Server (and compatible providers): DATEADD(MINUTE, N, col).
+        return $"DATEADD(MINUTE, {NegatedUtcOffsetMinutes}, {column})";
+    }
 
     private static string? FormatUserDisplay(string? userName, string? userEmail)
     {
