@@ -23,6 +23,12 @@ umbraco-package-schema.json
 **/umbraco/mediacache/
 **/App_Plugins/**/package.manifest
 
+## Dot-prefixed folders (except .github which holds repo actions)
+.*/
+**/.*/
+!.github/
+!**/.github/
+
 ## OS
 .DS_Store
 Thumbs.db
