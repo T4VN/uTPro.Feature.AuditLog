@@ -24,6 +24,7 @@ public class LogEntryViewModel
     public int NodeId { get; set; }
     public string NodeName { get; set; } = string.Empty;
     public string EntityType { get; set; } = string.Empty;
+    public Guid? NodeKey { get; set; }
 }
 
 public class AuditLogPagedResult<T>
@@ -42,6 +43,8 @@ public class AuditLogFilterRequest
     public DateTime? DateTo { get; set; }
     public int? UserId { get; set; }
     public int? AffectedUserId { get; set; }
+    public string? SortColumn { get; set; }
+    public string? SortDirection { get; set; }
 }
 
 public class TimelineEntryViewModel
@@ -55,6 +58,7 @@ public class TimelineEntryViewModel
     public string Extra { get; set; } = string.Empty;
     public int NodeId { get; set; }
     public string NodeName { get; set; } = string.Empty;
+    public Guid? NodeKey { get; set; }
 }
 
 public class UserInfoViewModel
@@ -94,6 +98,7 @@ internal class LogEntryDto
     public string? LogComment { get; set; }
     public int NodeId { get; set; }
     public string? EntityType { get; set; }
+    public Guid? NodeKey { get; set; }
 }
 
 internal class TimelineDto
@@ -108,6 +113,7 @@ internal class TimelineDto
     public string? Extra { get; set; }
     public int NodeId { get; set; }
     public string? NodeName { get; set; }
+    public Guid? NodeKey { get; set; }
     public DateTime SortDate { get; set; }
 }
 

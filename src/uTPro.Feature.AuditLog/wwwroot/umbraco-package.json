@@ -1,6 +1,6 @@
 {
   "name": "uTPro.AuditLog",
-  "version": "4.0.0",
+  "version": "3.0.0",
   "extensions": [
     {
       "type": "menuItem",
@@ -23,6 +23,24 @@
         "entityType": "utpro-audit-log-root",
         "headline": "#utproAuditLog_title"
       }
+    },
+    {
+      "type": "workspaceContext",
+      "alias": "uTPro.AuditLog.Context",
+      "name": "Audit Log Workspace Context",
+      "api": "/App_Plugins/utpro-audit-log/context.js",
+      "conditions": [
+        { "alias": "Umb.Condition.WorkspaceAlias", "match": "uTPro.AuditLog.Workspace" }
+      ]
+    },
+    {
+      "type": "workspaceFooterApp",
+      "alias": "uTPro.AuditLog.FooterApp",
+      "name": "Audit Log Footer App",
+      "element": "/App_Plugins/utpro-audit-log/footer.js",
+      "conditions": [
+        { "alias": "Umb.Condition.WorkspaceAlias", "match": "uTPro.AuditLog.Workspace" }
+      ]
     },
     {
       "type": "workspaceView",
@@ -48,7 +66,7 @@
       "meta": {
         "label": "#utproAuditLog_contentLogs",
         "pathname": "content-logs",
-        "icon": "icon-box-alt"
+        "icon": "icon-document"
       },
       "conditions": [
         { "alias": "Umb.Condition.WorkspaceAlias", "match": "uTPro.AuditLog.Workspace" }

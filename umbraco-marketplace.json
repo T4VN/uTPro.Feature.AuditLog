@@ -1,8 +1,8 @@
 {
   "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
   "Category": "Developer Tools",
-  "Title": "uTPro Audit Log",
-  "Description": "Audit Log Viewer for Umbraco 16+ backoffice. Adds a Settings menu item with a Timeline view merging audit and log data, Content Logs, and Audit Trail, including user tracking, full-text search, filtering, date range, CSV export, page jump, and GMT/UTC time toggle. Works on SQL Server and SQLite.",
+  "Title": "uTPro Audit Log Viewer",
+  "Description": "Audit log & content log viewer for the Umbraco backoffice (Umbraco 16, 17, 18). Browse, search, filter, sort and export the umbracoAudit and umbracoLog tables from the Settings section - without writing any SQL. Includes a unified Timeline merging audit and content logs, a Content Logs view, and an Audit Trail, with full-text search, user and date filters, quick date ranges (This month, last 30/7 days, today, custom), sortable columns, quick edit links to documents and media, a GMT/UTC time toggle, server-side paging, CSV export, and shareable/bookmarkable URL filters. Read-only and safe (no database schema changes), works on SQL Server and SQLite. Perfect for content auditing, user activity tracking, debugging, security review and compliance/GDPR reporting.",
   "AuthorDetails": {
     "Name": "T4VN",
     "Url": "https://t4vn.com",
@@ -10,6 +10,18 @@
     "SyncContributorsFromRepository": true
   },
   "Screenshots": [
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-Timeline.png",
+      "Caption": "uTPro Audit Log - Timeline v3.0.0"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-ContentLogs.png",
+      "Caption": "uTPro Audit Log - Content Logs v3.0.0"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-AuditTrail.png",
+      "Caption": "uTPro Audit Log - Audit Trail v3.0.0"
+    },
     {
       "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-1.png",
       "Caption": "uTPro Audit Log - Timeline"
@@ -40,18 +52,27 @@
   ],
   "Tags": [
     "audit",
+    "audit log",
+    "audit log viewer",
+    "audit trail",
     "log",
-    "dashboard",
+    "log viewer",
+    "content log",
+    "umbracoLog",
+    "umbracoAudit",
     "backoffice",
     "timeline",
     "tracking",
-    "export",
-    "csv",
+    "user activity",
+    "history",
     "changes",
     "change log",
-    "audit log",
-    "audit trail",
-    "user activity"
+    "security",
+    "compliance",
+    "gdpr",
+    "export",
+    "csv",
+    "developer tools"
   ],
   "LookingForContributors": true,
   "PackageType": "Package",

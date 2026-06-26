@@ -73,7 +73,8 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         if (conditions.Count > 0)
             sql = sql.Where(string.Join(" AND ", conditions), parameters.ToArray());
 
-        sql = sql.OrderByDescending("au.eventDateUtc").OrderByDescending("au.id");
+        sql = sql.OrderBy(BuildOrderBy(filter.SortColumn, filter.SortDirection,
+            AuditSortColumns, "au.eventDateUtc DESC, au.id DESC"));
 
         try
         {
@@ -118,7 +119,7 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         var sql = scope.SqlContext.Sql()
             .Select(@"l.id, l.userId, l.DateStamp, l.logHeader, l.logComment, l.NodeId, l.entityType,
                       CASE WHEN u.userName IS NULL THEN 'SYSTEM' ELSE u.userName END AS Username,
-                      u.userEmail, n.[Text]")
+                      u.userEmail, n.[Text], n.uniqueId AS NodeKey")
             .From($"{TableLog} l")
             .LeftJoin($"{TableUser} u").On("l.userId = u.id")
             .LeftJoin($"{TableNode} n").On("n.id = l.nodeId");
@@ -143,7 +144,8 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         if (conditions.Count > 0)
             sql = sql.Where(string.Join(" AND ", conditions), parameters.ToArray());
 
-        sql = sql.OrderByDescending("l.DateStamp").OrderByDescending("l.id");
+        sql = sql.OrderBy(BuildOrderBy(filter.SortColumn, filter.SortDirection,
+            LogSortColumns, "l.DateStamp DESC, l.id DESC"));
 
         try
         {
@@ -174,7 +176,8 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         LogComment = dto.LogComment ?? "",
         NodeId = dto.NodeId,
         EntityType = dto.EntityType ?? "",
-        NodeName = dto.Text ?? ""
+        NodeName = dto.Text ?? "",
+        NodeKey = dto.NodeKey
     };
 
     #endregion
@@ -241,6 +244,9 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
             // Use the correct date-arithmetic syntax for the active database provider.
             var logSortDateExpr = BuildLocalToUtcExpression(scope, "l.DateStamp");
 
+            var orderBy = BuildOrderBy(filter.SortColumn, filter.SortDirection,
+                TimelineSortColumns, "timeline.SortDate DESC, timeline.Date DESC");
+
             var unionSql = $@"
                 SELECT * FROM (
                     SELECT a.eventDateUtc AS Date, 'audit' AS Source, a.performingUserId AS UserId,
@@ -249,7 +255,7 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
                            a.eventType AS Action,
                            a.affectedDetails AS Details,
                            a.eventDetails AS Extra,
-                           0 AS NodeId, NULL AS NodeName,
+                           0 AS NodeId, NULL AS NodeName, NULL AS NodeKey,
                            a.eventDateUtc AS SortDate
                     FROM {TableAudit} a
                     LEFT JOIN {TableUser} pu ON a.performingUserId = pu.id{auditWhereClause}
@@ -258,12 +264,12 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
                            CASE WHEN u.userName IS NULL THEN 'SYSTEM' ELSE u.userName END AS [User],
                            u.userEmail AS UserEmail,
                            l.logHeader AS Action, l.logComment AS Details, l.entityType AS Extra,
-                           l.NodeId AS NodeId, n.[Text] AS NodeName,
+                           l.NodeId AS NodeId, n.[Text] AS NodeName, n.uniqueId AS NodeKey,
                            {logSortDateExpr} AS SortDate
                     FROM {TableLog} l
                     LEFT JOIN {TableUser} u ON l.userId = u.id
                     LEFT JOIN {TableNode} n ON n.id = l.nodeId{logWhereClause}
-                ) timeline ORDER BY timeline.SortDate DESC, timeline.Date DESC";
+                ) timeline ORDER BY {orderBy}";
 
             var sql = scope.SqlContext.Sql(unionSql, parameters.ToArray());
             var pageNumber = CalculatePageNumber(filter.Skip, filter.Take);
@@ -295,7 +301,8 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         Details = dto.Details ?? "",
         Extra = dto.Extra ?? "",
         NodeId = dto.NodeId,
-        NodeName = dto.NodeName ?? ""
+        NodeName = dto.NodeName ?? "",
+        NodeKey = dto.NodeKey
     };
 
     #endregion
@@ -360,6 +367,54 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
     #endregion
 
     #region Helpers
+
+    private static readonly IReadOnlyDictionary<string, string> AuditSortColumns =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["date"] = "au.eventDateUtc",
+            ["user"] = "p.userName",
+            ["eventType"] = "au.eventType",
+            ["details"] = "au.eventDetails",
+            ["ip"] = "au.performingIp",
+            ["affected"] = "au.affectedDetails",
+        };
+
+    private static readonly IReadOnlyDictionary<string, string> LogSortColumns =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["date"] = "l.DateStamp",
+            ["user"] = "u.userName",
+            ["logHeader"] = "l.logHeader",
+            ["comment"] = "l.logComment",
+            ["nodeId"] = "l.NodeId",
+            ["nodeName"] = "n.[Text]",
+            ["entity"] = "l.entityType",
+        };
+
+    private static readonly IReadOnlyDictionary<string, string> TimelineSortColumns =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["date"] = "timeline.SortDate",
+            ["user"] = "timeline.[User]",
+            ["source"] = "timeline.Source",
+            ["action"] = "timeline.Action",
+        };
+
+    /// <summary>
+    /// Builds a safe ORDER BY clause from a whitelist. Falls back to the default clause
+    /// when the requested column is not recognised (prevents SQL injection).
+    /// </summary>
+    private static string BuildOrderBy(string? sortColumn, string? sortDirection,
+        IReadOnlyDictionary<string, string> allowed, string defaultClause)
+    {
+        if (string.IsNullOrWhiteSpace(sortColumn) || !allowed.TryGetValue(sortColumn, out var column))
+            return defaultClause;
+
+        var direction = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase)
+            ? "ASC" : "DESC";
+
+        return $"{column} {direction}";
+    }
 
     private static int CalculatePageNumber(int skip, int take)
         => skip / Math.Max(take, 1) + 1;
