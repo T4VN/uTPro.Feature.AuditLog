@@ -10,7 +10,7 @@
 [![Umbraco 16 · 17 · 18](https://img.shields.io/badge/Umbraco-16%20%C2%B7%2017%20%C2%B7%2018-3544B1)](https://umbraco.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-<img src="https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot - Timeline.png" alt="Umbraco audit log viewer - Timeline of audit and content log activity in the backoffice" width="100%" />
+<img src="https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-Timeline.png" alt="Umbraco audit log viewer - Timeline of audit and content log activity in the backoffice" width="100%" />
 
 ---
 

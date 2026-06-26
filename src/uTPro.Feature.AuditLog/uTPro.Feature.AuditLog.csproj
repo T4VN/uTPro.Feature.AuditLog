@@ -9,7 +9,7 @@
     <!-- NuGet Package Metadata -->
     <PackageId>uTPro.Feature.AuditLog</PackageId>
     <Title>uTPro Audit Log Viewer for Umbraco (16, 17, 18)</Title>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <Authors>T4VN</Authors>
     <Company>T4VN</Company>
     <Description>Audit log &amp; content log viewer for the Umbraco backoffice (Umbraco 16, 17, 18). Browse, search, filter, sort and export the umbracoAudit and umbracoLog tables from Settings - no SQL needed. Features a unified Timeline, Content Logs and Audit Trail, full-text search, user/date filters, quick date ranges, sortable columns, quick edit links, GMT/UTC toggle, CSV export and shareable URL filters. Read-only, works on SQL Server and SQLite. Great for content auditing, user activity tracking, security review and compliance/GDPR reporting.</Description>
