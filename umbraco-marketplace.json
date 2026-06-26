@@ -11,15 +11,15 @@
   },
   "Screenshots": [
     {
-      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-Timeline.png",
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-Timeline.png",
       "Caption": "uTPro Audit Log - Timeline v3.0.0"
     },
     {
-      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-ContentLogs.png",
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-ContentLogs.png",
       "Caption": "uTPro Audit Log - Content Logs v3.0.0"
     },
     {
-      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-AuditTrail.png",
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-AuditTrail.png",
       "Caption": "uTPro Audit Log - Audit Trail v3.0.0"
     },
     {
