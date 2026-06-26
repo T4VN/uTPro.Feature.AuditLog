@@ -1,7 +1,5 @@
 # uTPro Audit Log Viewer for Umbraco
 
-<img width="42" height="42" alt="uTPro Audit Log Viewer icon" src="https://github.com/user-attachments/assets/a11d9f9f-fb3e-445c-86a4-401cc8aee392" align="absmiddle" /> 
-
 > **The missing audit log & content log viewer for the Umbraco backoffice.** Browse, search, filter, sort, and export every login, save, publish, move, and delete in your Umbraco site — straight from the Settings section, with no SQL queries. Supports **Umbraco 16, 17 and 18**.
 
 [![NuGet](https://img.shields.io/nuget/v/uTPro.Feature.AuditLog.svg)](https://www.nuget.org/packages/uTPro.Feature.AuditLog)
