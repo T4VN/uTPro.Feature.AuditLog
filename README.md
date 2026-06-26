@@ -72,7 +72,7 @@ After installing, open:
 
 | Timeline | Content Logs | Audit Trail |
 |---|---|---|
-| ![Umbraco audit log timeline](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot - Timeline.png) | ![Umbraco content log viewer](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot - Content Logs.png) | ![Umbraco audit trail](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot - Audit Trail.png) |
+| ![Umbraco audit log timeline](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-Timeline.png) | ![Umbraco content log viewer](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-Content Logs.png) | ![Umbraco audit trail](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-Audit Trail.png) |
 
 | Filtering | UTC / Local time | Export CSV |
 |---|---|---|
