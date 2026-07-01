@@ -5,7 +5,7 @@
 [![NuGet](https://img.shields.io/nuget/v/uTPro.Feature.AuditLog.svg)](https://www.nuget.org/packages/uTPro.Feature.AuditLog)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/uTPro.Feature.AuditLog.svg)](https://www.nuget.org/packages/uTPro.Feature.AuditLog)
 [![Umbraco Marketplace](https://img.shields.io/badge/Umbraco-Marketplace-blue)](https://marketplace.umbraco.com/package/utpro.feature.auditlog)
-[![Umbraco 16 · 17 · 18](https://img.shields.io/badge/Umbraco-16%20%C2%B7%2017%20%C2%B7%2018-3544B1)](https://umbraco.com)
+[![Umbraco 16+](https://img.shields.io/badge/Umbraco-16%2B-3544B1)](https://umbraco.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 <img src="https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-Timeline.png" alt="Umbraco audit log viewer - Timeline of audit and content log activity in the backoffice" width="100%" />
