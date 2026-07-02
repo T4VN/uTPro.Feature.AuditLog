@@ -1,9 +1,12 @@
+using Our.Umbraco.PostgreSql;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.CreateUmbracoBuilder()
     .AddBackOffice()
     .AddWebsite()
     .AddComposers()
+    .AddUmbracoPostgreSqlSupport()
     .Build();
 
 var app = builder.Build();

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Umbraco.Cms" Version="18.0.0" />
+    <PackageReference Include="Our.Umbraco.PostgreSql" Version="18.0.0" />
   </ItemGroup>
 
   <ItemGroup>

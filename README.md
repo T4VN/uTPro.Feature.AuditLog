@@ -24,6 +24,7 @@
 - [How it works](#how-it-works)
 - [Security & privacy](#security--privacy)
 - [FAQ](#faq)
+- [Changelog](#changelog)
 - [Keywords](#keywords)
 - [License](#license)
 
@@ -50,7 +51,7 @@ This is a lightweight, **read‑only** package: it creates no new database table
 - ⬇️ **Export to CSV** — download the current, filtered result set (up to 50,000 rows).
 - 🔖 **Shareable & bookmarkable filters** — the active filter, sort, and page are saved in the URL, so you can refresh, bookmark, or share a link and land on the exact same view.
 - 🔒 **Secure by default** — protected by the Settings‑section permission.
-- 🗄️ **Works on SQL Server and SQLite.**
+- 🗄️ **Works on SQL Server, SQLite and PostgreSQL.**
 
 ## Where to find it
 
@@ -90,18 +91,20 @@ Then run your site. The package registers itself automatically and the **Audit L
 
 | Umbraco | .NET | Database |
 |---------|------|----------|
-| 16.x | 9.0 | SQL Server · SQLite |
-| 17.x | 10.0 | SQL Server · SQLite |
-| 18.x | 10.0 | SQL Server · SQLite |
+| 16.x | 9.0 | SQL Server · SQLite · PostgreSQL |
+| 17.x | 10.0 | SQL Server · SQLite · PostgreSQL |
+| 18.x | 10.0 | SQL Server · SQLite · PostgreSQL |
 
 The package multi‑targets `net9.0` (Umbraco 16) and `net10.0` (Umbraco 17 & 18); a single install picks the right build for your project automatically.
+
+> **PostgreSQL note:** All queries quote their table/column identifiers through Umbraco's `SqlSyntax` provider, so they run correctly against a case‑sensitive PostgreSQL database — for example when using the community [`Our.Umbraco.PostgreSql`](https://github.com/idseefeld/PostgreSqlForUmbraco) provider. No provider‑specific configuration is required.
 
 ## How it works
 
 uTPro Audit Log Viewer is a self‑contained Razor Class Library:
 
 - A **Management API controller** (`/umbraco/management/api/v1/utpro/audit-log/…`) reads the data, guarded by the Settings‑section authorization policy.
-- A **scoped service** queries `umbracoAudit` and `umbracoLog` using Umbraco's scope provider with parameterized SQL, joining `umbracoUser` and `umbracoNode` for friendly names. It auto‑detects SQL Server vs SQLite for correct timeline date handling.
+- A **scoped service** queries `umbracoAudit` and `umbracoLog` using Umbraco's scope provider with parameterized SQL, joining `umbracoUser` and `umbracoNode` for friendly names. All identifiers are quoted through Umbraco's `SqlSyntax` provider, so the same code runs on SQL Server, SQLite and PostgreSQL, and it auto‑detects the provider for correct timeline date handling.
 - A **Lit‑based backoffice extension** registers a Settings menu item plus three workspace‑view tabs, a shared workspace context, and a workspace footer (Export + time toggle).
 
 ## Security & privacy
@@ -123,8 +126,21 @@ Those entries were written by Umbraco itself (background tasks) or by an account
 **Can I export more than 50,000 rows?**
 The export is capped at 50,000 rows per file to stay responsive. Narrow the result with filters and export in batches.
 
-**Does it work with SQL Server and SQLite?**
-Yes — both are supported, including correct chronological ordering on the Timeline.
+**Does it work with SQL Server, SQLite and PostgreSQL?**
+Yes — all three are supported, including correct chronological ordering on the Timeline. For PostgreSQL, use it together with a PostgreSQL provider such as [`Our.Umbraco.PostgreSql`](https://github.com/idseefeld/PostgreSqlForUmbraco).
+
+## Changelog
+
+### 4.0.0
+- **PostgreSQL support.** All queries now quote their table and column identifiers through Umbraco's `SqlSyntax` provider (`GetQuotedTableName` / `GetQuotedColumnName`), so they run correctly against a case‑sensitive PostgreSQL database — for example with the community [`Our.Umbraco.PostgreSql`](https://github.com/idseefeld/PostgreSqlForUmbraco) provider — in addition to SQL Server and SQLite.
+- Removed hard‑coded SQL Server square‑bracket identifiers (`[Text]`, `[User]`) that PostgreSQL does not understand.
+- Fixed a column‑casing issue (`umbracoLog.Datestamp`) that only worked by chance on case‑insensitive engines.
+- No UI, feature, or database‑schema changes — this is purely a database‑compatibility release.
+
+### 3.0.0
+- Support for Umbraco 16, 17 and 18 (multi‑target `net9.0` / `net10.0`).
+- Moved to a Settings menu item with three workspace tabs (Timeline, Content Logs, Audit Trail).
+- Added sortable columns, quick edit links to Document/Media, quick date ranges with *This month* default, GMT/UTC toggle in the workspace footer, jump‑to‑page, and shareable/bookmarkable URL filters.
 
 ## Keywords
 

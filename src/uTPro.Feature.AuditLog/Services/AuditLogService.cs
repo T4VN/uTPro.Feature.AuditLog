@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.DependencyInjection;
+using Umbraco.Cms.Infrastructure.Persistence.SqlSyntax;
 using Umbraco.Cms.Infrastructure.Scoping;
 using Umbraco.Extensions;
 using uTPro.Feature.AuditLog.Models;
@@ -40,41 +41,48 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
     public AuditLogPagedResult<AuditEntryViewModel> GetAuditEntries(AuditLogFilterRequest filter)
     {
         using var scope = scopeProvider.CreateScope(autoComplete: true);
+        var syntax = scope.SqlContext.SqlSyntax;
+
+        // Local helpers that produce provider-correct, case-safe identifiers
+        // (e.g. au."eventType" on PostgreSQL, au.[eventType] on SQL Server).
+        string Au(string c) => Col(syntax, "au", c);
+        string P(string c) => Col(syntax, "p", c);
+        string A(string c) => Col(syntax, "a", c);
 
         var sql = scope.SqlContext.Sql()
-            .Select(@"au.*, 
-                      p.userName AS performingUserName, p.userEmail AS performingEmail,
-                      a.userName AS affectedUserName, a.userEmail AS affectedEmail")
-            .From($"{TableAudit} au")
-            .LeftJoin($"{TableUser} p").On("au.performingUserId = p.id")
-            .LeftJoin($"{TableUser} a").On("au.affectedUserId = a.id");
+            .Select($@"au.*, 
+                      {P("userName")} AS performingUserName, {P("userEmail")} AS performingEmail,
+                      {A("userName")} AS affectedUserName, {A("userEmail")} AS affectedEmail")
+            .From($"{syntax.GetQuotedTableName(TableAudit)} au")
+            .LeftJoin($"{syntax.GetQuotedTableName(TableUser)} p").On($"{Au("performingUserId")} = {P("id")}")
+            .LeftJoin($"{syntax.GetQuotedTableName(TableUser)} a").On($"{Au("affectedUserId")} = {A("id")}");
 
         var conditions = new List<string>();
         var parameters = new List<object>();
         var paramIndex = 0;
 
         AddCondition(conditions, parameters, ref paramIndex,
-            filter.EventType, $"au.eventType = @{paramIndex}");
+            filter.EventType, $"{Au("eventType")} = @{paramIndex}");
 
         AddCondition(conditions, parameters, ref paramIndex,
-            filter.UserId, $"au.performingUserId = @{paramIndex}");
+            filter.UserId, $"{Au("performingUserId")} = @{paramIndex}");
 
         AddCondition(conditions, parameters, ref paramIndex,
-            filter.AffectedUserId, $"au.affectedUserId = @{paramIndex}");
+            filter.AffectedUserId, $"{Au("affectedUserId")} = @{paramIndex}");
 
         AddSearchCondition(conditions, parameters, ref paramIndex,
             filter.SearchTerm,
-            "au.eventDetails", "au.performingDetails", "au.affectedDetails",
-            "au.performingIp", "au.eventType", "p.userName", "a.userName");
+            Au("eventDetails"), Au("performingDetails"), Au("affectedDetails"),
+            Au("performingIp"), Au("eventType"), P("userName"), A("userName"));
 
         AddDateRange(conditions, parameters, ref paramIndex,
-            filter.DateFrom, filter.DateTo, "au.eventDateUtc");
+            filter.DateFrom, filter.DateTo, Au("eventDateUtc"));
 
         if (conditions.Count > 0)
             sql = sql.Where(string.Join(" AND ", conditions), parameters.ToArray());
 
-        sql = sql.OrderBy(BuildOrderBy(filter.SortColumn, filter.SortDirection,
-            AuditSortColumns, "au.eventDateUtc DESC, au.id DESC"));
+        sql = sql.OrderBy(BuildOrderBy(syntax, filter.SortColumn, filter.SortDirection,
+            AuditSortColumns, $"{Au("eventDateUtc")} DESC, {Au("id")} DESC"));
 
         try
         {
@@ -115,37 +123,43 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
     public AuditLogPagedResult<LogEntryViewModel> GetLogEntries(AuditLogFilterRequest filter)
     {
         using var scope = scopeProvider.CreateScope(autoComplete: true);
+        var syntax = scope.SqlContext.SqlSyntax;
+
+        string L(string c) => Col(syntax, "l", c);
+        string U(string c) => Col(syntax, "u", c);
+        string N(string c) => Col(syntax, "n", c);
 
         var sql = scope.SqlContext.Sql()
-            .Select(@"l.id, l.userId, l.DateStamp, l.logHeader, l.logComment, l.NodeId, l.entityType,
-                      CASE WHEN u.userName IS NULL THEN 'SYSTEM' ELSE u.userName END AS Username,
-                      u.userEmail, n.[Text], n.uniqueId AS NodeKey")
-            .From($"{TableLog} l")
-            .LeftJoin($"{TableUser} u").On("l.userId = u.id")
-            .LeftJoin($"{TableNode} n").On("n.id = l.nodeId");
+            .Select($@"{L("id")}, {L("userId")}, {L("Datestamp")}, {L("logHeader")}, {L("logComment")}, {L("NodeId")}, {L("entityType")},
+                      CASE WHEN {U("userName")} IS NULL THEN 'SYSTEM' ELSE {U("userName")} END AS Username,
+                      {U("userEmail")}, {N("text")}, {N("uniqueId")} AS NodeKey")
+            .From($"{syntax.GetQuotedTableName(TableLog)} l")
+            .LeftJoin($"{syntax.GetQuotedTableName(TableUser)} u").On($"{L("userId")} = {U("id")}")
+            .LeftJoin($"{syntax.GetQuotedTableName(TableNode)} n").On($"{N("id")} = {L("NodeId")}");
 
         var conditions = new List<string>();
         var parameters = new List<object>();
         var paramIndex = 0;
 
         AddCondition(conditions, parameters, ref paramIndex,
-            filter.EventType, $"l.logHeader = @{paramIndex}");
+            filter.EventType, $"{L("logHeader")} = @{paramIndex}");
 
         AddCondition(conditions, parameters, ref paramIndex,
-            filter.UserId, $"l.userId = @{paramIndex}");
+            filter.UserId, $"{L("userId")} = @{paramIndex}");
 
         AddSearchCondition(conditions, parameters, ref paramIndex,
             filter.SearchTerm,
-            "l.logComment", "u.userName", "l.entityType", "l.logHeader", "CAST(l.NodeId AS VARCHAR)");
+            L("logComment"), U("userName"), L("entityType"), L("logHeader"),
+            $"CAST({L("NodeId")} AS VARCHAR)");
 
         AddDateRange(conditions, parameters, ref paramIndex,
-            filter.DateFrom, filter.DateTo, "l.DateStamp");
+            filter.DateFrom, filter.DateTo, L("Datestamp"));
 
         if (conditions.Count > 0)
             sql = sql.Where(string.Join(" AND ", conditions), parameters.ToArray());
 
-        sql = sql.OrderBy(BuildOrderBy(filter.SortColumn, filter.SortDirection,
-            LogSortColumns, "l.DateStamp DESC, l.id DESC"));
+        sql = sql.OrderBy(BuildOrderBy(syntax, filter.SortColumn, filter.SortDirection,
+            LogSortColumns, $"{L("Datestamp")} DESC, {L("id")} DESC"));
 
         try
         {
@@ -187,6 +201,14 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
     public AuditLogPagedResult<TimelineEntryViewModel> GetTimeline(AuditLogFilterRequest filter)
     {
         using var scope = scopeProvider.CreateScope(autoComplete: true);
+        var syntax = scope.SqlContext.SqlSyntax;
+
+        string A(string c) => Col(syntax, "a", c);
+        string Pu(string c) => Col(syntax, "pu", c);
+        string L(string c) => Col(syntax, "l", c);
+        string U(string c) => Col(syntax, "u", c);
+        string N(string c) => Col(syntax, "n", c);
+        string Alias(string c) => syntax.GetQuotedColumnName(c);
 
         try
         {
@@ -197,39 +219,39 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
 
             if (filter.UserId.HasValue)
             {
-                auditConditions.Add($"a.performingUserId = @{paramIndex}");
-                logConditions.Add($"l.userId = @{paramIndex}");
+                auditConditions.Add($"{A("performingUserId")} = @{paramIndex}");
+                logConditions.Add($"{L("userId")} = @{paramIndex}");
                 parameters.Add(filter.UserId.Value);
                 paramIndex++;
             }
 
             if (filter.AffectedUserId.HasValue)
             {
-                auditConditions.Add($"a.affectedUserId = @{paramIndex}");
+                auditConditions.Add($"{A("affectedUserId")} = @{paramIndex}");
                 parameters.Add(filter.AffectedUserId.Value);
                 paramIndex++;
             }
 
             if (!string.IsNullOrWhiteSpace(filter.SearchTerm))
             {
-                auditConditions.Add($"(a.eventDetails LIKE @{paramIndex} OR a.performingDetails LIKE @{paramIndex} OR a.affectedDetails LIKE @{paramIndex} OR a.eventType LIKE @{paramIndex})");
-                logConditions.Add($"(l.logComment LIKE @{paramIndex} OR l.logHeader LIKE @{paramIndex})");
+                auditConditions.Add($"({A("eventDetails")} LIKE @{paramIndex} OR {A("performingDetails")} LIKE @{paramIndex} OR {A("affectedDetails")} LIKE @{paramIndex} OR {A("eventType")} LIKE @{paramIndex})");
+                logConditions.Add($"({L("logComment")} LIKE @{paramIndex} OR {L("logHeader")} LIKE @{paramIndex})");
                 parameters.Add($"%{filter.SearchTerm}%");
                 paramIndex++;
             }
 
             if (filter.DateFrom.HasValue)
             {
-                auditConditions.Add($"a.eventDateUtc >= @{paramIndex}");
-                logConditions.Add($"l.DateStamp >= @{paramIndex}");
+                auditConditions.Add($"{A("eventDateUtc")} >= @{paramIndex}");
+                logConditions.Add($"{L("Datestamp")} >= @{paramIndex}");
                 parameters.Add(filter.DateFrom.Value);
                 paramIndex++;
             }
 
             if (filter.DateTo.HasValue)
             {
-                auditConditions.Add($"a.eventDateUtc <= @{paramIndex}");
-                logConditions.Add($"l.DateStamp <= @{paramIndex}");
+                auditConditions.Add($"{A("eventDateUtc")} <= @{paramIndex}");
+                logConditions.Add($"{L("Datestamp")} <= @{paramIndex}");
                 parameters.Add(filter.DateTo.Value);
                 paramIndex++;
             }
@@ -239,36 +261,36 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
             var logWhereClause = logConditions.Count > 0
                 ? " WHERE " + string.Join(" AND ", logConditions) : "";
 
-            // umbracoLog.DateStamp is stored in local server time, while umbracoAudit.eventDateUtc
+            // umbracoLog.Datestamp is stored in local server time, while umbracoAudit.eventDateUtc
             // is UTC. Convert the log timestamp to UTC so both sources sort consistently.
             // Use the correct date-arithmetic syntax for the active database provider.
-            var logSortDateExpr = BuildLocalToUtcExpression(scope, "l.DateStamp");
+            var logSortDateExpr = BuildLocalToUtcExpression(scope, L("Datestamp"));
 
-            var orderBy = BuildOrderBy(filter.SortColumn, filter.SortDirection,
-                TimelineSortColumns, "timeline.SortDate DESC, timeline.Date DESC");
+            var orderBy = BuildOrderBy(syntax, filter.SortColumn, filter.SortDirection,
+                TimelineSortColumns, $"{Col(syntax, "timeline", "SortDate")} DESC, {Col(syntax, "timeline", "Date")} DESC");
 
             var unionSql = $@"
                 SELECT * FROM (
-                    SELECT a.eventDateUtc AS Date, 'audit' AS Source, a.performingUserId AS UserId,
-                           CASE WHEN pu.userName IS NULL THEN a.performingDetails ELSE pu.userName END AS [User],
-                           pu.userEmail AS UserEmail,
-                           a.eventType AS Action,
-                           a.affectedDetails AS Details,
-                           a.eventDetails AS Extra,
-                           0 AS NodeId, NULL AS NodeName, NULL AS NodeKey,
-                           a.eventDateUtc AS SortDate
-                    FROM {TableAudit} a
-                    LEFT JOIN {TableUser} pu ON a.performingUserId = pu.id{auditWhereClause}
+                    SELECT {A("eventDateUtc")} AS {Alias("Date")}, 'audit' AS {Alias("Source")}, {A("performingUserId")} AS {Alias("UserId")},
+                           CASE WHEN {Pu("userName")} IS NULL THEN {A("performingDetails")} ELSE {Pu("userName")} END AS {Alias("User")},
+                           {Pu("userEmail")} AS {Alias("UserEmail")},
+                           {A("eventType")} AS {Alias("Action")},
+                           {A("affectedDetails")} AS {Alias("Details")},
+                           {A("eventDetails")} AS {Alias("Extra")},
+                           0 AS {Alias("NodeId")}, NULL AS {Alias("NodeName")}, NULL AS {Alias("NodeKey")},
+                           {A("eventDateUtc")} AS {Alias("SortDate")}
+                    FROM {syntax.GetQuotedTableName(TableAudit)} a
+                    LEFT JOIN {syntax.GetQuotedTableName(TableUser)} pu ON {A("performingUserId")} = {Pu("id")}{auditWhereClause}
                     UNION ALL
-                    SELECT l.DateStamp AS Date, 'log' AS Source, l.userId AS UserId,
-                           CASE WHEN u.userName IS NULL THEN 'SYSTEM' ELSE u.userName END AS [User],
-                           u.userEmail AS UserEmail,
-                           l.logHeader AS Action, l.logComment AS Details, l.entityType AS Extra,
-                           l.NodeId AS NodeId, n.[Text] AS NodeName, n.uniqueId AS NodeKey,
-                           {logSortDateExpr} AS SortDate
-                    FROM {TableLog} l
-                    LEFT JOIN {TableUser} u ON l.userId = u.id
-                    LEFT JOIN {TableNode} n ON n.id = l.nodeId{logWhereClause}
+                    SELECT {L("Datestamp")} AS {Alias("Date")}, 'log' AS {Alias("Source")}, {L("userId")} AS {Alias("UserId")},
+                           CASE WHEN {U("userName")} IS NULL THEN 'SYSTEM' ELSE {U("userName")} END AS {Alias("User")},
+                           {U("userEmail")} AS {Alias("UserEmail")},
+                           {L("logHeader")} AS {Alias("Action")}, {L("logComment")} AS {Alias("Details")}, {L("entityType")} AS {Alias("Extra")},
+                           {L("NodeId")} AS {Alias("NodeId")}, {N("text")} AS {Alias("NodeName")}, {N("uniqueId")} AS {Alias("NodeKey")},
+                           {logSortDateExpr} AS {Alias("SortDate")}
+                    FROM {syntax.GetQuotedTableName(TableLog)} l
+                    LEFT JOIN {syntax.GetQuotedTableName(TableUser)} u ON {L("userId")} = {U("id")}
+                    LEFT JOIN {syntax.GetQuotedTableName(TableNode)} n ON {N("id")} = {L("NodeId")}{logWhereClause}
                 ) timeline ORDER BY {orderBy}";
 
             var sql = scope.SqlContext.Sql(unionSql, parameters.ToArray());
@@ -314,8 +336,11 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         try
         {
             using var scope = scopeProvider.CreateScope(autoComplete: true);
+            var syntax = scope.SqlContext.SqlSyntax;
             return scope.Database.Fetch<string>(
-                scope.SqlContext.Sql().Select("DISTINCT eventType").From(TableAudit));
+                scope.SqlContext.Sql()
+                    .Select($"DISTINCT {syntax.GetQuotedColumnName("eventType")}")
+                    .From(syntax.GetQuotedTableName(TableAudit)));
         }
         catch (Exception ex)
         {
@@ -329,8 +354,11 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         try
         {
             using var scope = scopeProvider.CreateScope(autoComplete: true);
+            var syntax = scope.SqlContext.SqlSyntax;
             return scope.Database.Fetch<string>(
-                scope.SqlContext.Sql().Select("DISTINCT logHeader").From(TableLog));
+                scope.SqlContext.Sql()
+                    .Select($"DISTINCT {syntax.GetQuotedColumnName("logHeader")}")
+                    .From(syntax.GetQuotedTableName(TableLog)));
         }
         catch (Exception ex)
         {
@@ -344,10 +372,11 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         try
         {
             using var scope = scopeProvider.CreateScope(autoComplete: true);
+            var syntax = scope.SqlContext.SqlSyntax;
             var sql = scope.SqlContext.Sql()
-                .Select("id, userName, userEmail")
-                .From(TableUser)
-                .OrderBy("userName");
+                .Select($"{syntax.GetQuotedColumnName("id")}, {syntax.GetQuotedColumnName("userName")}, {syntax.GetQuotedColumnName("userEmail")}")
+                .From(syntax.GetQuotedTableName(TableUser))
+                .OrderBy(syntax.GetQuotedColumnName("userName"));
 
             return scope.Database.Fetch<UserDto>(sql)
                 .Select(u => new UserInfoViewModel
@@ -368,52 +397,62 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
 
     #region Helpers
 
-    private static readonly IReadOnlyDictionary<string, string> AuditSortColumns =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    // Sort maps hold logical (alias, column) pairs; the column is quoted per-provider at
+    // build time so ORDER BY is safe on SQL Server, SQLite and PostgreSQL alike.
+    private static readonly IReadOnlyDictionary<string, (string Alias, string Column)> AuditSortColumns =
+        new Dictionary<string, (string, string)>(StringComparer.OrdinalIgnoreCase)
         {
-            ["date"] = "au.eventDateUtc",
-            ["user"] = "p.userName",
-            ["eventType"] = "au.eventType",
-            ["details"] = "au.eventDetails",
-            ["ip"] = "au.performingIp",
-            ["affected"] = "au.affectedDetails",
+            ["date"] = ("au", "eventDateUtc"),
+            ["user"] = ("p", "userName"),
+            ["eventType"] = ("au", "eventType"),
+            ["details"] = ("au", "eventDetails"),
+            ["ip"] = ("au", "performingIp"),
+            ["affected"] = ("au", "affectedDetails"),
         };
 
-    private static readonly IReadOnlyDictionary<string, string> LogSortColumns =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    private static readonly IReadOnlyDictionary<string, (string Alias, string Column)> LogSortColumns =
+        new Dictionary<string, (string, string)>(StringComparer.OrdinalIgnoreCase)
         {
-            ["date"] = "l.DateStamp",
-            ["user"] = "u.userName",
-            ["logHeader"] = "l.logHeader",
-            ["comment"] = "l.logComment",
-            ["nodeId"] = "l.NodeId",
-            ["nodeName"] = "n.[Text]",
-            ["entity"] = "l.entityType",
+            ["date"] = ("l", "Datestamp"),
+            ["user"] = ("u", "userName"),
+            ["logHeader"] = ("l", "logHeader"),
+            ["comment"] = ("l", "logComment"),
+            ["nodeId"] = ("l", "NodeId"),
+            ["nodeName"] = ("n", "text"),
+            ["entity"] = ("l", "entityType"),
         };
 
-    private static readonly IReadOnlyDictionary<string, string> TimelineSortColumns =
-        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    private static readonly IReadOnlyDictionary<string, (string Alias, string Column)> TimelineSortColumns =
+        new Dictionary<string, (string, string)>(StringComparer.OrdinalIgnoreCase)
         {
-            ["date"] = "timeline.SortDate",
-            ["user"] = "timeline.[User]",
-            ["source"] = "timeline.Source",
-            ["action"] = "timeline.Action",
+            ["date"] = ("timeline", "SortDate"),
+            ["user"] = ("timeline", "User"),
+            ["source"] = ("timeline", "Source"),
+            ["action"] = ("timeline", "Action"),
         };
+
+    /// <summary>
+    /// Produces a provider-correct, case-safe qualified identifier such as
+    /// <c>au."eventType"</c> (PostgreSQL) or <c>au.[eventType]</c> (SQL Server).
+    /// The table alias is emitted verbatim (aliases are chosen to be lower-case and safe).
+    /// </summary>
+    private static string Col(ISqlSyntaxProvider syntax, string alias, string column)
+        => $"{alias}.{syntax.GetQuotedColumnName(column)}";
 
     /// <summary>
     /// Builds a safe ORDER BY clause from a whitelist. Falls back to the default clause
     /// when the requested column is not recognised (prevents SQL injection).
     /// </summary>
-    private static string BuildOrderBy(string? sortColumn, string? sortDirection,
-        IReadOnlyDictionary<string, string> allowed, string defaultClause)
+    private static string BuildOrderBy(ISqlSyntaxProvider syntax, string? sortColumn, string? sortDirection,
+        IReadOnlyDictionary<string, (string Alias, string Column)> allowed, string defaultClause)
     {
-        if (string.IsNullOrWhiteSpace(sortColumn) || !allowed.TryGetValue(sortColumn, out var column))
+        if (string.IsNullOrWhiteSpace(sortColumn) || !allowed.TryGetValue(sortColumn, out var target))
             return defaultClause;
 
         var direction = string.Equals(sortDirection, "asc", StringComparison.OrdinalIgnoreCase)
             ? "ASC" : "DESC";
 
-        return $"{column} {direction}";
+        return $"{Col(syntax, target.Alias, target.Column)} {direction}";
     }
 
     private static int CalculatePageNumber(int skip, int take)
@@ -427,12 +466,20 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
     {
         var providerName = scope.Database.DatabaseType.GetType().Name;
         var isSqlite = providerName.Contains("SQLite", StringComparison.OrdinalIgnoreCase);
+        var isPostgres = providerName.Contains("Postgre", StringComparison.OrdinalIgnoreCase)
+            || providerName.Contains("Npgsql", StringComparison.OrdinalIgnoreCase);
 
         if (isSqlite)
         {
             // SQLite: datetime(col, '+N minutes') — sign is required in the modifier.
             var signedMinutes = NegatedUtcOffsetMinutes.ToString("+0;-0");
             return $"datetime({column}, '{signedMinutes} minutes')";
+        }
+
+        if (isPostgres)
+        {
+            // PostgreSQL: col + (N * interval '1 minute'). DATEADD does not exist.
+            return $"({column} + ({NegatedUtcOffsetMinutes} * interval '1 minute'))";
         }
 
         // SQL Server (and compatible providers): DATEADD(MINUTE, N, col).

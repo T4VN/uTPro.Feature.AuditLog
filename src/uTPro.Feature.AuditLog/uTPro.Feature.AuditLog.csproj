@@ -9,17 +9,17 @@
     <!-- NuGet Package Metadata -->
     <PackageId>uTPro.Feature.AuditLog</PackageId>
     <Title>uTPro Audit Log Viewer for Umbraco (16, 17, 18)</Title>
-    <Version>3.0.1</Version>
+    <Version>4.0.0</Version>
     <Authors>T4VN</Authors>
     <Company>T4VN</Company>
-    <Description>Audit log &amp; content log viewer for the Umbraco backoffice (Umbraco 16, 17, 18). Browse, search, filter, sort and export the umbracoAudit and umbracoLog tables from Settings - no SQL needed. Features a unified Timeline, Content Logs and Audit Trail, full-text search, user/date filters, quick date ranges, sortable columns, quick edit links, GMT/UTC toggle, CSV export and shareable URL filters. Read-only, works on SQL Server and SQLite. Great for content auditing, user activity tracking, security review and compliance/GDPR reporting.</Description>
+    <Description>Audit log &amp; content log viewer for the Umbraco backoffice (Umbraco 16, 17, 18). Browse, search, filter, sort and export the umbracoAudit and umbracoLog tables from Settings - no SQL needed. Features a unified Timeline, Content Logs and Audit Trail, full-text search, user/date filters, quick date ranges, sortable columns, quick edit links, GMT/UTC toggle, CSV export and shareable URL filters. Read-only, works on SQL Server, SQLite and PostgreSQL. Great for content auditing, user activity tracking, security review and compliance/GDPR reporting.</Description>
     <PackageTags>umbraco;umbraco-marketplace;umbraco-package;audit;audit-log;audit-trail;log;log-viewer;content-log;umbracolog;umbracoaudit;backoffice;activity;tracking;history;security;compliance;gdpr;csv;export;timeline</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/T4VN/uTPro.Feature.AuditLog</PackageProjectUrl>
     <RepositoryUrl>https://github.com/T4VN/uTPro.Feature.AuditLog</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>v3.0.0: Support for Umbraco 16, 17 and 18 (multi-target net9.0/net10.0). Moved to a Settings menu item with three workspace tabs (Timeline, Content Logs, Audit Trail). Added sortable columns, quick edit links to Document/Media, quick date ranges with This month default, GMT/UTC toggle in the workspace footer, jump-to-page, and shareable/bookmarkable URL filters.</PackageReleaseNotes>
+    <PackageReleaseNotes>v4.0.0: PostgreSQL support. All queries now quote table/column identifiers via Umbraco's SqlSyntax provider (GetQuotedTableName/GetQuotedColumnName), so they run correctly on case-sensitive PostgreSQL (e.g. with the Our.Umbraco.PostgreSql provider) in addition to SQL Server and SQLite. Removed hard-coded SQL Server square-bracket identifiers ([Text], [User]) and fixed a column-casing issue (umbracoLog.Datestamp). No functional/UI changes and no database schema changes - purely a database-compatibility release.</PackageReleaseNotes>
 
     <StaticWebAssetBasePath>App_Plugins/utpro-audit-log</StaticWebAssetBasePath>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
