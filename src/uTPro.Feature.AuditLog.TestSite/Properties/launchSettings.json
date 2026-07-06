@@ -4,7 +4,8 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings__umbracoDbDSN": "Host=localhost;Port=5432;Database=uTPro.Feature.AuditLog;Username=postgres;Password=123;Include Error Detail=true"
       },
       "applicationUrl": "https://localhost:54741;http://localhost:54742"
     }
