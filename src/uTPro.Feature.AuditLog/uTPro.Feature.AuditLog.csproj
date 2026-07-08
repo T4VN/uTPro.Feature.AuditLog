@@ -9,7 +9,7 @@
     <!-- NuGet Package Metadata -->
     <PackageId>uTPro.Feature.AuditLog</PackageId>
     <Title>uTPro Audit Log Viewer for Umbraco (16, 17, 18)</Title>
-    <Version>4.0.2</Version>
+    <Version>4.0.3</Version>
     <Authors>T4VN</Authors>
     <Company>T4VN</Company>
     <Description>Audit log &amp; content log viewer for the Umbraco backoffice (Umbraco 16, 17, 18). Browse, search, filter, sort and export the umbracoAudit and umbracoLog tables from Settings - no SQL needed. Features a unified Timeline, Content Logs and Audit Trail, full-text search, user/date filters, quick date ranges, sortable columns, quick edit links, GMT/UTC toggle, CSV export and shareable URL filters. Read-only, works on SQL Server, SQLite and PostgreSQL. Great for content auditing, user activity tracking, security review and compliance/GDPR reporting.</Description>
@@ -19,7 +19,7 @@
     <RepositoryUrl>https://github.com/T4VN/uTPro.Feature.AuditLog</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>v4.0.2: Maintenance release — clean rebuild from a wiped output to guarantee the shipped assembly is current (packaging now goes through a deterministic clean-pack step). No source, API, UI or database changes versus 4.0.1. v4.0.1: Republish of the PostgreSQL-compatibility release under a new version number (the 4.0.0 artifact on the feed/cache predated the identifier-quoting fix). PostgreSQL support. All queries now quote table/column identifiers via Umbraco's SqlSyntax provider (GetQuotedTableName/GetQuotedColumnName), so they run correctly on case-sensitive PostgreSQL (e.g. with the Our.Umbraco.PostgreSql provider) in addition to SQL Server and SQLite. Removed hard-coded SQL Server square-bracket identifiers ([Text], [User]) and fixed a column-casing issue (umbracoLog.Datestamp). No functional/UI changes and no database schema changes - purely a database-compatibility release.</PackageReleaseNotes>
+    <PackageReleaseNotes>v4.0.3: Dictionary item log entries now resolve to the dictionary key and link straight to the item's editor in the backoffice (Translation section), instead of showing only the numeric node id. Applies to the Timeline and Content Logs views. v4.0.2: Maintenance release — clean rebuild from a wiped output to guarantee the shipped assembly is current (packaging now goes through a deterministic clean-pack step). No source, API, UI or database changes versus 4.0.1. v4.0.1: Republish of the PostgreSQL-compatibility release under a new version number (the 4.0.0 artifact on the feed/cache predated the identifier-quoting fix). PostgreSQL support. All queries now quote table/column identifiers via Umbraco's SqlSyntax provider (GetQuotedTableName/GetQuotedColumnName), so they run correctly on case-sensitive PostgreSQL (e.g. with the Our.Umbraco.PostgreSql provider) in addition to SQL Server and SQLite. Removed hard-coded SQL Server square-bracket identifiers ([Text], [User]) and fixed a column-casing issue (umbracoLog.Datestamp). No functional/UI changes and no database schema changes - purely a database-compatibility release.</PackageReleaseNotes>
 
     <StaticWebAssetBasePath>App_Plugins/utpro-audit-log</StaticWebAssetBasePath>
     <!-- Packages are produced only via the repo's pack.ps1 (clean build + cache eviction),

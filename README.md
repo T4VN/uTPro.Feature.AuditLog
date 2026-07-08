@@ -77,6 +77,10 @@ After installing, open:
 |---|---|---|
 | ![Filter audit log](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-4.png) | ![UTC time toggle](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-5.png) | ![Export audit log to CSV](https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-6-exportCSV.png) |
 
+**Dictionary quick link** — dictionary item log entries show the dictionary key and link straight to the item's editor (Translation section) instead of a bare node id.
+
+<img src="https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-LinkItemDictionary.png" alt="Umbraco audit log - dictionary item entry linking directly to its editor" width="100%" />
+
 ## Installation
 
 Install from NuGet:

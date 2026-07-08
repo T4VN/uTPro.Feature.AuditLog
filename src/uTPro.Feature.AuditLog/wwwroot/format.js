@@ -21,12 +21,13 @@ export function localTimeLabel() {
         : `GMT${sign}${hours}:${String(minutes).padStart(2, '0')}`;
 }
 
-/** Backoffice deep-link to edit a Document or Media node, or null when not linkable. */
+/** Backoffice deep-link to edit a Document, Media or Dictionary item, or null when not linkable. */
 export function nodeEditHref(entityType, nodeKey) {
     if (!nodeKey) return null;
     const type = (entityType || '').toLowerCase();
     if (type === 'document') return `/umbraco/section/content/workspace/document/edit/${nodeKey}`;
     if (type === 'media') return `/umbraco/section/media/workspace/media/edit/${nodeKey}`;
+    if (type === 'dictionaryitem') return `/umbraco/section/translation/workspace/dictionary/edit/${nodeKey}`;
     return null;
 }
 

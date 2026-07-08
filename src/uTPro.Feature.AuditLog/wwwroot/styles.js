@@ -82,6 +82,19 @@ export const dashboardStyles = css`
         white-space: nowrap;
     }
 
+    /* Wrap long unbroken values (e.g. dotted dictionary keys) inside the fixed-width
+       column instead of overflowing into the next column. */
+    .wrap-anywhere {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+    }
+
+    .wrap-anywhere a {
+        display: inline-block;
+        max-width: 100%;
+    }
+
     .pagination {
         display: flex;
         justify-content: space-between;

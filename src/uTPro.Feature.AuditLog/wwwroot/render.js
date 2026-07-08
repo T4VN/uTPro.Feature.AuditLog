@@ -210,7 +210,7 @@ export function renderLogTable(host) {
                     <uui-table-cell><uui-tag look="primary">${item.logHeader}</uui-tag></uui-table-cell>
                     <uui-table-cell class="truncate">${item.logComment}</uui-table-cell>
                     <uui-table-cell>${item.nodeId}</uui-table-cell>
-                    <uui-table-cell>${nodeNameCell(item)}</uui-table-cell>
+                    <uui-table-cell class="wrap-anywhere">${nodeNameCell(item)}</uui-table-cell>
                     <uui-table-cell>${item.entityType}</uui-table-cell>
                 </uui-table-row>`)}
         </uui-table>`;

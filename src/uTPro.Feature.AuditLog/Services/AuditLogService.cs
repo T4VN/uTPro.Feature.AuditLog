@@ -31,6 +31,12 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
     private const string TableLog = "umbracoLog";
     private const string TableUser = "umbracoUser";
     private const string TableNode = "umbracoNode";
+    private const string TableDictionary = "cmsDictionary";
+
+    // umbracoLog.entityType value Umbraco writes for dictionary item audit entries
+    // (Create/Update/Delete/Move DictionaryItem). Its NodeId is the dictionary item's
+    // integer id, which maps to cmsDictionary.pk (not umbracoNode.id).
+    private const string DictionaryEntityType = "DictionaryItem";
 
     // Offset (in minutes) to convert local server time → UTC: subtract the local offset.
     private static readonly int NegatedUtcOffsetMinutes =
@@ -128,14 +134,21 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         string L(string c) => Col(syntax, "l", c);
         string U(string c) => Col(syntax, "u", c);
         string N(string c) => Col(syntax, "n", c);
+        string D(string c) => Col(syntax, "d", c);
+
+        // For dictionary items the node lives in cmsDictionary (key + guid), not umbracoNode,
+        // so resolve the display name / edit key from the matching source per entityType.
+        var nodeName = $"CASE WHEN {L("entityType")} = '{DictionaryEntityType}' THEN {D("key")} ELSE {N("text")} END";
+        var nodeKey = $"CASE WHEN {L("entityType")} = '{DictionaryEntityType}' THEN {D("id")} ELSE {N("uniqueId")} END";
 
         var sql = scope.SqlContext.Sql()
             .Select($@"{L("id")}, {L("userId")}, {L("Datestamp")}, {L("logHeader")}, {L("logComment")}, {L("NodeId")}, {L("entityType")},
                       CASE WHEN {U("userName")} IS NULL THEN 'SYSTEM' ELSE {U("userName")} END AS Username,
-                      {U("userEmail")}, {N("text")}, {N("uniqueId")} AS NodeKey")
+                      {U("userEmail")}, {nodeName} AS {syntax.GetQuotedColumnName("text")}, {nodeKey} AS NodeKey")
             .From($"{syntax.GetQuotedTableName(TableLog)} l")
             .LeftJoin($"{syntax.GetQuotedTableName(TableUser)} u").On($"{L("userId")} = {U("id")}")
-            .LeftJoin($"{syntax.GetQuotedTableName(TableNode)} n").On($"{N("id")} = {L("NodeId")}");
+            .LeftJoin($"{syntax.GetQuotedTableName(TableNode)} n").On($"{N("id")} = {L("NodeId")}")
+            .LeftJoin($"{syntax.GetQuotedTableName(TableDictionary)} d").On($"{D("pk")} = {L("NodeId")}");
 
         var conditions = new List<string>();
         var parameters = new List<object>();
@@ -208,6 +221,7 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
         string L(string c) => Col(syntax, "l", c);
         string U(string c) => Col(syntax, "u", c);
         string N(string c) => Col(syntax, "n", c);
+        string D(string c) => Col(syntax, "d", c);
         string Alias(string c) => syntax.GetQuotedColumnName(c);
 
         try
@@ -266,6 +280,10 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
             // Use the correct date-arithmetic syntax for the active database provider.
             var logSortDateExpr = BuildLocalToUtcExpression(scope, L("Datestamp"));
 
+            // Dictionary items are not umbracoNode rows: resolve their name/key from cmsDictionary.
+            var logNodeName = $"CASE WHEN {L("entityType")} = '{DictionaryEntityType}' THEN {D("key")} ELSE {N("text")} END";
+            var logNodeKey = $"CASE WHEN {L("entityType")} = '{DictionaryEntityType}' THEN {D("id")} ELSE {N("uniqueId")} END";
+
             var orderBy = BuildOrderBy(syntax, filter.SortColumn, filter.SortDirection,
                 TimelineSortColumns, $"{Col(syntax, "timeline", "SortDate")} DESC, {Col(syntax, "timeline", "Date")} DESC");
 
@@ -286,11 +304,12 @@ internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogSer
                            CASE WHEN {U("userName")} IS NULL THEN 'SYSTEM' ELSE {U("userName")} END AS {Alias("User")},
                            {U("userEmail")} AS {Alias("UserEmail")},
                            {L("logHeader")} AS {Alias("Action")}, {L("logComment")} AS {Alias("Details")}, {L("entityType")} AS {Alias("Extra")},
-                           {L("NodeId")} AS {Alias("NodeId")}, {N("text")} AS {Alias("NodeName")}, {N("uniqueId")} AS {Alias("NodeKey")},
+                           {L("NodeId")} AS {Alias("NodeId")}, {logNodeName} AS {Alias("NodeName")}, {logNodeKey} AS {Alias("NodeKey")},
                            {logSortDateExpr} AS {Alias("SortDate")}
                     FROM {syntax.GetQuotedTableName(TableLog)} l
                     LEFT JOIN {syntax.GetQuotedTableName(TableUser)} u ON {L("userId")} = {U("id")}
-                    LEFT JOIN {syntax.GetQuotedTableName(TableNode)} n ON {N("id")} = {L("NodeId")}{logWhereClause}
+                    LEFT JOIN {syntax.GetQuotedTableName(TableNode)} n ON {N("id")} = {L("NodeId")}
+                    LEFT JOIN {syntax.GetQuotedTableName(TableDictionary)} d ON {D("pk")} = {L("NodeId")}{logWhereClause}
                 ) timeline ORDER BY {orderBy}";
 
             var sql = scope.SqlContext.Sql(unionSql, parameters.ToArray());
