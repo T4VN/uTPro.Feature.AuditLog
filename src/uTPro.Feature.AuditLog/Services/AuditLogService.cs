@@ -1,29 +1,10 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Umbraco.Cms.Core.Composing;
-using Umbraco.Cms.Core.DependencyInjection;
 using Umbraco.Cms.Infrastructure.Persistence.SqlSyntax;
 using Umbraco.Cms.Infrastructure.Scoping;
 using Umbraco.Extensions;
 using uTPro.Feature.AuditLog.Models;
 
 namespace uTPro.Feature.AuditLog.Services;
-
-internal class AuditLogComposer : IComposer
-{
-    public void Compose(IUmbracoBuilder builder)
-        => builder.Services.AddScoped<IAuditLogService, AuditLogService>();
-}
-
-public interface IAuditLogService
-{
-    AuditLogPagedResult<AuditEntryViewModel> GetAuditEntries(AuditLogFilterRequest filter);
-    AuditLogPagedResult<LogEntryViewModel> GetLogEntries(AuditLogFilterRequest filter);
-    AuditLogPagedResult<TimelineEntryViewModel> GetTimeline(AuditLogFilterRequest filter);
-    IEnumerable<string> GetDistinctEventTypes();
-    IEnumerable<string> GetDistinctLogHeaders();
-    IEnumerable<UserInfoViewModel> GetUsers();
-}
 
 internal class AuditLogService(IScopeProvider scopeProvider, ILogger<AuditLogService> logger) : IAuditLogService
 {
