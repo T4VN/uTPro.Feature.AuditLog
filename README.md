@@ -135,6 +135,18 @@ Yes — all three are supported, including correct chronological ordering on the
 
 ## Changelog
 
+### 4.0.4
+- Internal refactor — the monolithic `AuditLogModels.cs` was split into one‑type‑per‑file DTOs and view models, with small service‑interface tidy‑ups. No functional, API, UI, or database changes versus 4.0.3.
+
+### 4.0.3
+- **Dictionary quick links.** Dictionary item log entries now resolve to the dictionary key and link straight to the item's editor in the backoffice (Translation section), instead of showing only the numeric node id. Applies to the **Timeline** and **Content Logs** views.
+
+### 4.0.2
+- Maintenance release — clean rebuild from a wiped output to guarantee the shipped assembly is current (packaging now goes through a deterministic clean‑pack step). No source, API, UI, or database changes versus 4.0.1.
+
+### 4.0.1
+- Republish of the PostgreSQL‑compatibility release under a new version number (the 4.0.0 artifact on the feed/cache predated the identifier‑quoting fix). Contents are identical to 4.0.0 below.
+
 ### 4.0.0
 - **PostgreSQL support.** All queries now quote their table and column identifiers through Umbraco's `SqlSyntax` provider (`GetQuotedTableName` / `GetQuotedColumnName`), so they run correctly against a case‑sensitive PostgreSQL database — for example with the community [`Our.Umbraco.PostgreSql`](https://github.com/idseefeld/PostgreSqlForUmbraco) provider — in addition to SQL Server and SQLite.
 - Removed hard‑coded SQL Server square‑bracket identifiers (`[Text]`, `[User]`) that PostgreSQL does not understand.
