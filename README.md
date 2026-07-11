@@ -135,7 +135,7 @@ Yes — all three are supported, including correct chronological ordering on the
 
 ## Changelog
 
-### 4.0.4
+### 4.0.4 & 4.0.5
 - Internal refactor — the monolithic `AuditLogModels.cs` was split into one‑type‑per‑file DTOs and view models, with small service‑interface tidy‑ups. No functional, API, UI, or database changes versus 4.0.3.
 
 ### 4.0.3
