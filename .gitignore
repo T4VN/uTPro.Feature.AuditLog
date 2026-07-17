@@ -26,3 +26,6 @@ Thumbs.db
 
 ## Local launch profile (may hold dev DB connection string / secrets) - not committed
 **/Properties/launchSettings.json
+
+## Local secret overrides for appsettings - not committed
+**/appsettings.*.local.json
