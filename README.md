@@ -50,7 +50,7 @@ This is a lightweight, **read‑only** package: it creates no new database table
 - 📄 **Server‑side pagination** with jump‑to‑page.
 - ⬇️ **Export to CSV** — download the current, filtered result set (up to 50,000 rows).
 - 🔖 **Shareable & bookmarkable filters** — the active filter, sort, and page are saved in the URL, so you can refresh, bookmark, or share a link and land on the exact same view.
-- 🔒 **Secure by default** — protected by the Settings‑section permission.
+- 🔒 **Secure by default** — access is restricted to backoffice **administrators** (requires both the Settings‑section permission and membership of the built‑in Administrators group).
 - 🗄️ **Works on SQL Server, SQLite and PostgreSQL.**
 
 ## Where to find it
@@ -58,6 +58,8 @@ This is a lightweight, **read‑only** package: it creates no new database table
 After installing, open:
 
 > **Settings → Advanced → Audit Log Viewer** (in the left sidebar, just below the built‑in *Log Viewer*).
+
+Only backoffice **administrators** can open and use it — a non‑admin user with Settings‑section access will receive a *Forbidden* response.
 
 ## The three views
 
@@ -107,13 +109,14 @@ The package multi‑targets `net9.0` (Umbraco 16) and `net10.0` (Umbraco 17 & 18
 
 uTPro Audit Log Viewer is a self‑contained Razor Class Library:
 
-- A **Management API controller** (`/umbraco/management/api/v1/utpro/audit-log/…`) reads the data, guarded by the Settings‑section authorization policy.
+- A **Management API controller** (`/umbraco/management/api/v1/utpro/audit-log/…`) reads the data, guarded by the Settings‑section policy AND an administrators‑group check (admin‑only).
 - A **scoped service** queries `umbracoAudit` and `umbracoLog` using Umbraco's scope provider with parameterized SQL, joining `umbracoUser` and `umbracoNode` for friendly names. All identifiers are quoted through Umbraco's `SqlSyntax` provider, so the same code runs on SQL Server, SQLite and PostgreSQL, and it auto‑detects the provider for correct timeline date handling.
 - A **Lit‑based backoffice extension** registers a Settings menu item plus three workspace‑view tabs, a shared workspace context, and a workspace footer (Export + time toggle).
 
 ## Security & privacy
 
-- All endpoints require access to the **Settings** section, so only authorized backoffice users can read audit data.
+- All endpoints require access to the **Settings** section AND **Administrator** membership, so only administrators can read audit data.
+- **CSV export neutralizes spreadsheet formula injection** — cells beginning with `=`, `+`, `-`, `@`, tab, or carriage return are prefixed with a single quote — and the search term escapes SQL `LIKE` wildcards.
 - The package is **read‑only** apart from generating the CSV file you choose to download. It does not add tables, columns, or migrations and does not change existing data.
 
 ## FAQ
@@ -122,7 +125,7 @@ uTPro Audit Log Viewer is a self‑contained Razor Class Library:
 No. It only reads from `umbracoAudit` and `umbracoLog`; the only output is the CSV you download.
 
 **Who can see the audit data?**
-Only backoffice users with access to the **Settings** section.
+Only backoffice **administrators** (users in the Administrators group with Settings‑section access).
 
 **Why are some users shown as `SYSTEM` or `UNKNOWN`?**
 Those entries were written by Umbraco itself (background tasks) or by an account that no longer resolves — they are shown exactly as recorded.
@@ -134,6 +137,12 @@ The export is capped at 50,000 rows per file to stay responsive. Narrow the resu
 Yes — all three are supported, including correct chronological ordering on the Timeline. For PostgreSQL, use it together with a PostgreSQL provider such as [`Our.Umbraco.PostgreSql`](https://github.com/idseefeld/PostgreSqlForUmbraco).
 
 ## Changelog
+
+### 4.1.0 (security hardening)
+- **Access tightened to administrators only** (previously any user with Settings‑section access). The controller now additionally requires membership of the built‑in Administrators group, because audit logs expose every user's activity, emails, and IP addresses.
+- **CSV formula‑injection neutralization** on all three exports — cells beginning with `=`, `+`, `-`, `@`, tab, or carriage return are prefixed with a single quote.
+- **SQL `LIKE` wildcard escaping** on the search term.
+- Internal refactor of the query service into partial files. **No UI or database changes.**
 
 ### 4.0.4 & 4.0.5
 - Internal refactor — the monolithic `AuditLogModels.cs` was split into one‑type‑per‑file DTOs and view models, with small service‑interface tidy‑ups. No functional, API, UI, or database changes versus 4.0.3.
