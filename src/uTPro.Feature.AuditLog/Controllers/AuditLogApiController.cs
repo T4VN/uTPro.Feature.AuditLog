@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Umbraco.Cms.Api.Common.Attributes;
 using Umbraco.Cms.Api.Management.Controllers;
 using Umbraco.Cms.Api.Management.Routing;
 using Umbraco.Cms.Core;
@@ -19,7 +20,8 @@ namespace uTPro.Feature.AuditLog.Controllers;
 // "admin-only" authorization policy for management API controllers, so the group check is the
 // most direct and reliable admin gate.
 [VersionedApiBackOfficeRoute("utpro/audit-log")]
-[ApiExplorerSettings(GroupName = "uTPro Audit Log")]
+[MapToApi(ConfigureAuditLogSwaggerGenOptions.ApiName)]
+[ApiExplorerSettings(GroupName = "Audit Log")]
 [Authorize(Policy = AuthorizationPolicies.SectionAccessSettings)]
 public class AuditLogApiController(
     IAuditLogService auditLogService,
