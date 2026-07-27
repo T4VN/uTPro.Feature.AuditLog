@@ -1,0 +1,81 @@
+{
+  "$schema": "https://marketplace.umbraco.com/umbraco-marketplace-schema.json",
+  "Category": "Developer Tools",
+  "Title": "uTPro Audit Log Viewer",
+  "Description": "Audit log & content log viewer for the Umbraco backoffice (Umbraco 16, 17, 18). Browse, search, filter, sort and export the umbracoAudit and umbracoLog tables from the Settings section - without writing any SQL. Includes a unified Timeline merging audit and content logs, a Content Logs view, and an Audit Trail, with full-text search, user and date filters, quick date ranges (This month, last 30/7 days, today, custom), sortable columns, quick edit links to documents and media, a GMT/UTC time toggle, server-side paging, CSV export, and shareable/bookmarkable URL filters. Read-only and safe (no database schema changes), works on SQL Server, SQLite and PostgreSQL. Perfect for content auditing, user activity tracking, debugging, security review and compliance/GDPR reporting.",
+  "AuthorDetails": {
+    "Name": "T4VN",
+    "Url": "https://t4vn.com",
+    "ImageUrl": "https://github.com/t4vn.png",
+    "SyncContributorsFromRepository": true
+  },
+  "Screenshots": [
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-Timeline.png",
+      "Caption": "uTPro Audit Log - Timeline v3.0.0"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-ContentLogs.png",
+      "Caption": "uTPro Audit Log - Content Logs v3.0.0"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots-v3.0.0/Screenshot-AuditTrail.png",
+      "Caption": "uTPro Audit Log - Audit Trail v3.0.0"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-1.png",
+      "Caption": "uTPro Audit Log - Timeline"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-2.png",
+      "Caption": "uTPro Audit Log - UmbracoLog"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-3.png",
+      "Caption": "uTPro Audit Log - UmbracoAudit"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-4.png",
+      "Caption": "uTPro Audit Log - UmbracoLog - Filter"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-5.png",
+      "Caption": "uTPro Audit Log - UTC"
+    },
+    {
+      "ImageUrl": "https://raw.githubusercontent.com/T4VN/uTPro.Feature.AuditLog/refs/heads/main/Image/Screenshots/Screenshot-6-exportCSV.png",
+      "Caption": "uTPro Audit Log - Export CSV"
+    }
+  ],
+  "LicenseTypes": [
+    "Free"
+  ],
+  "Tags": [
+    "audit",
+    "audit log",
+    "audit log viewer",
+    "audit trail",
+    "log",
+    "log viewer",
+    "content log",
+    "umbracoLog",
+    "umbracoAudit",
+    "backoffice",
+    "timeline",
+    "tracking",
+    "user activity",
+    "history",
+    "changes",
+    "change log",
+    "security",
+    "compliance",
+    "gdpr",
+    "export",
+    "csv",
+    "developer tools"
+  ],
+  "LookingForContributors": false,
+  "PackageType": "Package",
+  "DocumentationUrl": "https://github.com/T4VN/uTPro.Feature.AuditLog",
+  "IssueTrackerUrl": "https://github.com/T4VN/uTPro.Feature.AuditLog/issues"
+}
